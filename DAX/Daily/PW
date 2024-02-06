@@ -1,0 +1,6 @@
+PW := 
+--previous value 7 days ago
+CALCULATE(
+    [AC], 
+    DATEADD( dimDate[Date], -7, DAY )
+)

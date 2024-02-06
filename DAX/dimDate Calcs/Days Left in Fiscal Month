@@ -1,0 +1,3 @@
+Days Left in Fiscal Month = 
+--Calculated column
+dimDate[Days in Fiscal Month] - dimDate[Day of Fiscal Month Number]

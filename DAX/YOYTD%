@@ -1,0 +1,5 @@
+YOYTD% := 
+DIVIDE (
+    [YOYTD],
+    [PYTD]
+)

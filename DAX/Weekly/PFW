@@ -1,0 +1,9 @@
+PFW := 
+CALCULATE (
+    [AC],
+    FILTER (
+        ALL ( dimDate ),
+        dimDate[Fiscal Year Number] = VALUES ( dimDate[Fiscal Year Number] )
+            && dimDate[Fiscal Year Week Number] = VALUES ( dimDate[Fiscal Year Week Number]) -1
+    )
+)

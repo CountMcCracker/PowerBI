@@ -1,0 +1,5 @@
+YOY% := 
+DIVIDE (
+    [YOY],
+    [PY]
+)

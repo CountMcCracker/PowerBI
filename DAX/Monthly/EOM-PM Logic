@@ -1,0 +1,6 @@
+EOM-PFM Logic := 
+IF(
+    ISBLANK( [PL] ),
+    [EOM-PM],
+    BLANK()
+)

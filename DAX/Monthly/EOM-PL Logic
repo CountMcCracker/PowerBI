@@ -1,0 +1,6 @@
+EOM-PL Logic := 
+IF(
+    ISBLANK( [PL] ),
+    BLANK(),
+    [EOM-PL]
+)

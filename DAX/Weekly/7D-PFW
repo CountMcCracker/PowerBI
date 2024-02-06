@@ -1,0 +1,3 @@
+7D-PFW := 
+--7 day caulation minus previous fiscal week caulation
+[7D] - [PFW]

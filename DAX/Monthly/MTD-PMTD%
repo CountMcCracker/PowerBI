@@ -1,0 +1,5 @@
+MTD-PMTD% := 
+DIVIDE(
+    [MTD] - [PMTD],
+    [PMTD]
+)

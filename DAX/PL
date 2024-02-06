@@ -1,0 +1,6 @@
+PL := 
+--use to select which KPIs to show with plan values
+SWITCH(
+    MIN( KPIs[KPI cd] ), 
+    2, [Planned Quantity in LBS]
+)

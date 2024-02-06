@@ -1,0 +1,3 @@
+DateWithValue = 
+--Calculated column
+dimDate[Date] <= MAX ( fact[Date] )

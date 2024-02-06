@@ -1,0 +1,5 @@
+EOM-PL% := 
+DIVIDE(
+    [EOM-PL],
+    [PL]
+)

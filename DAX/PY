@@ -1,0 +1,56 @@
+PY := 
+SWITCH(
+    MIN( KPIs[KPI cd] ),
+    1, -- only performs calulation on KPI Cd = 1 all others are blank, use this to select PY baseline for specific KPIs
+    VAR MonthsOffset = 12
+    RETURN IF(
+        [ShowValuesForDates],
+            SUMX( --sum the values, use AVERAGEX for ratios
+                SUMMARIZE ( dimDate, dimDate[Fiscal Year Month Number] ),
+                VAR CurrentYearMonthNumber = dimDate[Fiscal Year Month Number]
+                VAR PreviousYearMonthNumber = CurrentYearMonthNumber - MonthsOffset
+                VAR DaysOnMonth =
+                    CALCULATE (
+                        COUNTROWS ( dimDate ),
+                        ALLEXCEPT (
+                            dimDate,
+                            dimDate[Fiscal Year Month Number], -- Year Month granularity
+                            dimDate[Day of week]        -- Filter-safe Date column
+                        )
+                    )
+                VAR DaysSelected =
+                    CALCULATE (
+                        COUNTROWS ( dimDate ),
+                        dimDate[DateWithValues] = TRUE
+                    )
+                RETURN IF (
+                    DaysOnMonth = DaysSelected,
+        
+                    -- Selection of all days in the month
+                    CALCULATE (
+                        [AC],
+                        ALLEXCEPT ( dimDate, dimDate[Day of Week] ),
+                        dimDate[Fiscal Year Month Number] = PreviousYearMonthNumber
+                    ),
+                    
+                    -- Partial selection of days in a month
+                    CALCULATE (
+                        [AC],
+                        ALLEXCEPT ( dimDate, dimDate[Day of Week] ),
+                        dimDate[Fiscal Year Month Number] = PreviousYearMonthNumber,
+                        CALCULATETABLE (
+                            VALUES ( dimDate[Day of Fiscal Month Number] ),
+                            ALLEXCEPT (                              -- Removes filters from all the
+                                dimDate,                             -- columns that do not have a day
+                                dimDate[Day of Fiscal Month Number],
+                                dimDate[Fiscal Week Number],-- granularity, keeping only
+                                dimDate[Date]                        -- Date and Day of Month Number
+                            ),
+                            dimDate[Fiscal Year Month Number] = CurrentYearMonthNumber,
+                            dimDate[DateWithValues] = TRUE
+                        )
+                    )
+                )
+            )
+        )
+)

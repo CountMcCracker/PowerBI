@@ -1,0 +1,15 @@
+MTD := 
+IF (
+    [ShowValueForDates],
+    VAR LastDayAvailable =  MAX ( dimDate[Day of Fiscal Month Number] )
+    VAR LastFiscalYearMonthAvailable = MAX ( dimDate[Fiscal Year Month Number] )
+    VAR Result =
+        CALCULATE (
+            [AC],
+            ALLEXCEPT ( dimDate, dimDate[Day of Week] ),
+            dimDate [Day of Fiscal Month Number] <= LastDayAvailable,
+            dimDate [Fiscal Year Month Number] = LastFiscalYearMonthAvailable
+        )
+    RETURN
+        Result
+)

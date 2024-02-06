@@ -1,0 +1,11 @@
+7D := 
+--7 day caulation
+CALCULATE (
+    [AC],
+    FILTER (
+        ALL ( dimDate ),
+        dimDate[Fiscal Year Number] = VALUES ( dimDate[Fiscal Year Number] )
+            && dimDate[Date] > MAX ( dimDate[Date] ) - 7
+            && dimDate[Date]<= MAX ( dimDate[Date])
+    )
+)

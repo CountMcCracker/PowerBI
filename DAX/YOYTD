@@ -1,0 +1,10 @@
+YOYTD := 
+VAR ValueCurrentPeriod = [YTD]
+VAR ValuePreviousPeriod = [PYTD]
+VAR Result =
+    IF (
+        NOT ISBLANK ( ValueCurrentPeriod ) && NOT ISBLANK ( ValuePreviousPeriod ),
+        ValueCurrentPeriod - ValuePreviousPeriod
+    )
+RETURN
+    Result

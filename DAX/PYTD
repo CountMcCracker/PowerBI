@@ -1,0 +1,24 @@
+PYTD := 
+IF (
+    [ShowValueForDates],
+    VAR PreviousFiscalYear = MAX ( dimDate[Fiscal Year Number] ) - 1
+    VAR LastDayOfFiscalYearAvailable =
+        CALCULATE (
+            MAX ( dimDate[Day of Fiscal Year Number] ),
+            REMOVEFILTERS (                  -- Removes filters from
+                dimDate[Day of Week],        -- to get the last day with data
+                dimDate[Day of Week Number]  -- selected in the report
+            ),
+            dimDate[DateWithValue] = TRUE
+        )
+    VAR Result =
+        CALCULATE (
+            [AC],
+            ALLEXCEPT ( dimDate, dimDate[Day of Week] ),
+            dimDate[Fiscal Year Number] = PreviousFiscalYear,
+            dimDate[Day of Fiscal Year Number] <= LastDayOfFiscalYearAvailable,
+            dimDate[DateWithValue] = TRUE
+        )
+    RETURN
+        Result
+)

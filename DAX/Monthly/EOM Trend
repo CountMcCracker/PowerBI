@@ -1,0 +1,10 @@
+EOM Trend := 
+    VAR DaysLeftInMonth = MAX( dimDate[Days Left in Fiscal Month] )
+    VAR DaysOfMonthComplete = MAX( dimDate[Days in Fiscal Month] ) - DaysLeftInMonth
+    VAR DailyAverage = 
+        IF(DaysOfMonthComplete <= 7,
+            [7D MA],                            --use moving average if days complete lneq 7
+            [MTD] / DaysOfMonthComplete         --otherwise use month to date / days complete
+        )
+
+    RETURN [MTD] + DailyAverage * DaysLeftInMonth

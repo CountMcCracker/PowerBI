@@ -1,0 +1,7 @@
+Days in Fiscal Month = 
+--Calculated column
+CALCULATE(
+    MAX( dimDate[Day of Fiscal Month Number] ),
+    FILTER( dimDate, dimDate[Fiscal Year Month Number] = EARLIER( dimDate[Fiscal Year Month Number] )
+    )
+)

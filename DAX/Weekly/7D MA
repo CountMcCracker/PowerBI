@@ -1,0 +1,7 @@
+7D MA := 
+--7 day moving average
+IF(
+    [AC] = BLANK(), 
+    BLANK(), 
+    [7D] / 7
+)

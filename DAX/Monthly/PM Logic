@@ -1,0 +1,6 @@
+PM Logic := 
+IF(
+    ISBLANK( [PL] ),
+    [PM],
+    BLANK()
+)

@@ -1,0 +1,12 @@
+ShowSalesForDates := 
+VAR LastDateWithData =
+    CALCULATE (
+        MAX ( fact[Date] ),
+        REMOVEFILTERS ()
+    )
+VAR FirstDateVisible =
+    MIN ( dimDate[Date] )
+VAR Result =
+    FirstDateVisible <= LastDateWithData
+RETURN
+    Result

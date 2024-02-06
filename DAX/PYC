@@ -1,0 +1,14 @@
+PYC := 
+--previous year complete
+IF (
+    [ShowValueForDates] && HASONEVALUE ( dimDate[Fiscal Year Number] ),
+    VAR PreviousFiscalYear = MAX ( dimDate[Fiscal Year Number] ) - 1
+    VAR Result =
+        CALCULATE (
+            [AC],
+            ALLEXCEPT ( dimDate, dimDate[Day of Week] ),
+            dimDate[Fiscal Year Number] = PreviousFiscalYear
+        )
+    RETURN
+        Result
+)

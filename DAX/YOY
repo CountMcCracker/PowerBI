@@ -1,0 +1,11 @@
+YOY := 
+VAR ValueCurrentPeriod = [AC]
+VAR ValuePreviousPeriod = [PY]
+VAR Result =
+    IF (
+        NOT ISBLANK ( ValueCurrentPeriod )
+            && NOT ISBLANK ( ValuePreviousPeriod ),
+        ValueCurrentPeriod - ValuePreviousPeriod
+    )
+RETURN
+    Result
