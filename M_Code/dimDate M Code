@@ -1,0 +1,25 @@
+let
+  Source = Csv.Document(Web.Contents("https://bwfoods.sharepoint.com/sites/CorporateFSQA-BWF/Shared%20Documents/Power_BI_Limited_Access/Data/Master_Data/dimDate.csv"), [Delimiter = ",", Columns = 33, Encoding = 65001, QuoteStyle = QuoteStyle.None]),
+  #"Promoted headers" = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+  #"Changed column type" = Table.TransformColumnTypes(#"Promoted headers", {{"Date", type datetime}, {"Day of Fiscal Month Number", Int64.Type}, {"Day of Fiscal Quarter Number", Int64.Type}, {"Day of Fiscal Year Number", Int64.Type}, {"Day of Week", type text}, {"Day of Week Number", Int64.Type}, {"Fiscal Month", type text}, {"Fiscal Quarter", type text}, {"Fiscal Month Number", Int64.Type}, {"Fiscal Quarter Number", Int64.Type}, {"Fiscal Week", type text}, {"Fiscal Week Number", Int64.Type}, {"Fiscal Year", type text}, {"Fiscal Year Month", type text}, {"Fiscal Year Month Number", Int64.Type}, {"Fiscal Year Number", Int64.Type}, {"Fiscal Year Quarter", type text}, {"Fiscal Year Quarter Number", Int64.Type}, {"Fiscal Year Week", type text}, {"Fiscal Year Week Number", Int64.Type}, {"Sequential Day Number", Int64.Type}}),
+  #"Changed column type 1" = Table.TransformColumnTypes(#"Changed column type", {{"Date", type date}}),
+  // The spreadsheet contained hierarchical columns. These will be created in the dataset with continuous dates.
+  #"Removed hierarchy columns" = Table.RemoveColumns(#"Changed column type 1", {"Week_8", "Year_7", "Week_6", "Quarter_5", "Year_4", "Week_3", "Month_2", "Quarter", "Year_1", "Week", "Month", "Year"}),
+  #"Added fiscal month date" = Table.TransformColumnTypes(Table.AddColumn(#"Removed hierarchy columns", "Fiscal Month Date", each Text.Combine({Text.From([Fiscal Month Number], "en-US"), "/1/", Text.From([Fiscal Year Number], "en-US")})), {{"Fiscal Month Date", type date}}),
+  #"Added weekending date" = Table.TransformColumnTypes(Table.AddColumn(#"Added fiscal month date", "Weekending Date", each Date.EndOfWeek([Date])), {{"Weekending Date", type date}}),
+  #"Added fiscal quarter end month number" = Table.TransformColumnTypes(Table.AddColumn(#"Added weekending date", "Fiscal Quarter End Month Number", each if [Fiscal Quarter Number] = 1 then 3 
+else if [Fiscal Quarter Number] = 2 then 6 
+else if [Fiscal Quarter Number] = 3 then 9 
+else if [Fiscal Quarter Number] = 4 then 12 
+else null), {{"Fiscal Quarter End Month Number", Int64.Type}}),
+  #"Added fiscal quarter date" = Table.TransformColumnTypes(Table.AddColumn(#"Added fiscal quarter end month number", "Fiscal Quarter Date", each Text.Combine({Text.From([Fiscal Quarter End Month Number], "en-US"), "/1/", Text.From([Fiscal Year Number], "en-US")})), {{"Fiscal Quarter Date", type date}}),
+  #"Replaced value" = Table.ReplaceValue(#"Added fiscal quarter date", "FM ", "", Replacer.ReplaceText, {"Fiscal Month"}),
+  #"Replaced value 1" = Table.ReplaceValue(#"Replaced value", "FM ", "", Replacer.ReplaceText, {"Fiscal Year Month"}),
+  #"Inserted month name" = Table.AddColumn(#"Replaced value 1", "Fiscal Month Long", each Date.MonthName([Fiscal Month Date]), type nullable text),
+  // "0"
+  #"Inserted fiscal month num prefix" = Table.AddColumn(#"Inserted month name", "Prefix", each "0" & Text.From([Fiscal Month Number]), type text),
+  #"Extracted last characters of prefix" = Table.TransformColumns(#"Inserted fiscal month num prefix", {{"Prefix", each Text.End(_, 2), type text}}),
+  #"Inserted merged fiscal year num and prefix" = Table.AddColumn(#"Extracted last characters of prefix", "Fiscal Year Period Num fk", each Text.Combine({Text.From([Fiscal Year Number]), [Prefix]}, ""), type text),
+  #"Changed fiscal year period num fk to num" = Table.TransformColumnTypes(#"Inserted merged fiscal year num and prefix", {{"Fiscal Year Period Num fk", Int64.Type}})
+in
+  #"Changed fiscal year period num fk to num"
