@@ -1,0 +1,25 @@
+AC Avg 3M := 
+IF (
+    [ShowSalesForDates],
+    VAR MonthsInRange = 3
+    VAR LastMonthRange =
+        MAX ( 'dimDate'[Fiscal Year Month Number] )
+    VAR FirstMonthRange =
+        LastMonthRange - MonthsInRange + 1
+    VAR Period3M =
+        FILTER (
+            ALL ( 'dimDate'[Fiscal Year Month Number]  ),
+            'dimDate'[Fiscal Year Month Number]  >= FirstMonthRange
+                && 'dimDate'[Fiscal Year Month Number]  <= LastMonthRange
+        )
+    VAR Result =
+        IF (
+            COUNTROWS ( Period3M ) >= MonthsInRange,
+            CALCULATE (
+                AVERAGEX ( Period3M, [AC] ),
+                REMOVEFILTERS ( 'dimDate' )
+            )
+        )
+    RETURN
+        Result
+)
