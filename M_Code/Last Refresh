@@ -1,0 +1,14 @@
+let
+    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("VZDLCQAhDAV78Sxonv9axP7bWLNPMN4mDMYhc7oUBAFRmvNOJBTy8r8RnTpNJh8TdRo0iUzT94BIIeTzRBdAaBr5GF0A0FTyMZqGdNM2mwDkG7CZZuhQKEA2ZdWI+pQ1U9ae/7v5v9vTYNzTYNiyFG/Z5rU+", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [dtDSTStart = _t, dtDSTEnd = _t]),
+    #"Changed Type" = Table.TransformColumnTypes(Source, {{"dtDSTStart", type date}, {"dtDSTEnd", type date}}, "en-US"),
+    varCurrentDate = DateTime.Date(DateTimeZone.SwitchZone(DateTimeZone.LocalNow(),-6)),
+    #"Filtered Rows" = Table.SelectRows(#"Changed Type", each [dtDSTStart] < varCurrentDate and [dtDSTEnd] > varCurrentDate),
+    varDSTOffset = Table.RowCount(#"Filtered Rows"),
+    #"Last Refresh Date" = #table(
+        type table [#"Last Refresh"=datetimezone],
+        {
+            {DateTimeZone.SwitchZone(DateTimeZone.LocalNow(),-6 + varDSTOffset,0)}
+        }
+    )
+in
+    #"Last Refresh Date"
