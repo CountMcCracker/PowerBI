@@ -1,0 +1,36 @@
+AC Fiscal Year Week Regression = 
+-regression by fiscal week number
+VAR Known =
+    FILTER (
+        SELECTCOLUMNS (
+            CALCULATETABLE ( VALUES ( dimDate[Fiscal Year Week Number] ), ALLSELECTED ( dimDate )),
+            "Known[X]", dimDate[Fiscal Year Week Number],
+            "Known[Y]", [AC]
+        ),
+        AND ( NOT ( ISBLANK ( Known[X] ) ), NOT ( ISBLANK ( Known[Y] ) ) )
+    )
+VAR Count_Items =
+    COUNTROWS ( Known )
+VAR Sum_X =
+    SUMX ( Known, Known[X] )
+VAR Sum_X2 =
+    SUMX ( Known, Known[X] ^ 2 )
+VAR Sum_Y =
+    SUMX ( Known, Known[Y] )
+VAR Sum_XY =
+    SUMX ( Known, Known[X] * Known[Y] )
+VAR Average_X =
+    AVERAGEX ( Known, Known[X] )
+VAR Average_Y =
+    AVERAGEX ( Known, Known[Y] )
+VAR Slope =
+    DIVIDE (
+        Count_Items * Sum_XY - Sum_X * Sum_Y,
+        Count_Items * Sum_X2 - Sum_X ^ 2
+    )
+VAR Intercept = Average_Y
+    - Slope * Average_X
+RETURN
+    SUMX ( DISTINCT ( dimDate[Fiscal Year Week Number] ),
+    Intercept + Slope * dimDate[Fiscal Year Week Number]
+)
