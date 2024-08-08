@@ -1,1 +1,16 @@
-
+last modified date = 
+=IF(
+  A76<>"", //input
+  IF(
+    AND(
+      A76<>"",
+      CELL("address")=ADDRESS(ROW(A76), COLUMN(A76))
+    ),
+    NOW(),
+    IF(
+      CELL("address")<>ADDRESS(ROW(A76), COLUMN(A76)), 
+      G76, // last modified date
+      NOW())
+  ),
+  ""
+)
