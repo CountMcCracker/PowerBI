@@ -1,0 +1,8 @@
+Day in Fiscal Month Last Available = 
+VAR _lastdate = CALCULATE( MAX( dimDate[Date] ), ALL( dimDate ), dimDate[DateWithSales] = TRUE() )
+RETURN
+    IF( 
+        dimDate[Date] = _lastdate, 
+        "Last day available",
+        dimDate[Day of Fiscal Month Number] & " - " & dimDate[Date]
+    )
