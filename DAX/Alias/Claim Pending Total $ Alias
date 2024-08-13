@@ -1,0 +1,42 @@
+Claim Pending Total ($) Alias = 
+IF(
+    not ISFILTERED( dimSupplierAlias[Supplier Nm] ),
+    CALCULATE(
+            SUMX( 
+                DISTINCT( factSupplierNotitications[Surrogate Key] ), 
+                FIRSTNONBLANK( 
+                    factSupplierNotitications[Claim Approved Amt], 
+                    SUM( factSupplierNotitications[Pending Claim Amt] )
+                )
+            ),
+            USERELATIONSHIP(dimSupplier[Supplier Natural Key],  dimSupplierAlias[Supplier Natural Key] )
+            ),
+    VAR SelectedSupplier = SELECTEDVALUE ( dimSupplier[Supplier Nm] )
+    VAR LegendSupplier = SELECTEDVALUE ( dimSupplierAlias[Supplier Nm] )
+    RETURN
+    IF (
+        LegendSupplier = SelectedSupplier,
+        CALCULATE(
+            SUMX( 
+                DISTINCT( factSupplierNotitications[Surrogate Key] ), 
+                FIRSTNONBLANK( 
+                    factSupplierNotitications[Claim Approved Amt], 
+                    SUM( factSupplierNotitications[Pending Claim Amt] )
+                )
+            ),
+            USERELATIONSHIP(dimSupplier[Supplier Natural Key],  dimSupplierAlias[Supplier Natural Key] )
+            ),
+        CALCULATE (
+            SUMX( 
+                DISTINCT( factSupplierNotitications[Surrogate Key] ), 
+                FIRSTNONBLANK( 
+                    factSupplierNotitications[Claim Approved Amt], 
+                    SUM( factSupplierNotitications[Pending Claim Amt] )
+                )
+            ),
+            USERELATIONSHIP(dimSupplier[Supplier Natural Key],  dimSupplierAlias[Supplier Natural Key] ),
+            FILTER ( ALL ( dimSupplier ), dimSupplier[Supplier Nm] <> SelectedSupplier),
+            dimSupplier[Supplier Nm Alias]  = LegendSupplier
+        )
+    )
+)
