@@ -1,0 +1,8 @@
+Last Available Fiscal Week = 
+VAR _lastdate = CALCULATE( MAX( dimDate[Ops Weekending Date]), ALL( dimDate ), dimDate[DateWithAbsence] = TRUE() )
+RETURN
+    IF( 
+        dimDate[Ops Weekending Date] = _lastdate, 
+        "Last week available",
+        dimDate[Ops Fiscal Week] & " - " & dimDate[Ops Weekending Date]
+    )
