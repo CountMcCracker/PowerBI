@@ -1,0 +1,4 @@
+Current Ops FY Week Num = 
+CALCULATE(
+    MAX( dimDate[Ops Fiscal Year Week Number] ), dimDate[Date] <= TODAY()
+)
