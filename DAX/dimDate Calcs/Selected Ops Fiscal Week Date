@@ -1,0 +1,22 @@
+Selected Ops Fiscal Week Date := 
+VAR _maxdate = 
+    CALCULATE(
+        MAX( dimDate[Ops Fiscal Year Week Number] ),
+        dimDate[lneq Current Ops FY Week T/F] = TRUE()
+    )
+VAR _maxfy = 
+    CALCULATE(
+        MAX( dimDate[Ops Fiscal Year Number] ),
+        dimDate[lneq Current Ops FY Week T/F] = TRUE()
+    )
+
+RETURN
+
+IF(
+    ISFILTERED( dimDate[Ops Fiscal Week] ) && HASONEVALUE( dimDate[Ops Fiscal Week] ),
+    _maxdate,
+    FORMAT (
+        MIN( dimDate[Date] ), "mmm-dd" )&".. "&
+        FORMAT(
+            _maxdate, "mmm-dd" )&" "&_maxfy
+)
