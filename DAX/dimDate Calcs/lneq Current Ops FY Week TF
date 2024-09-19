@@ -1,0 +1,4 @@
+lneq Current Ops FY Week T/F = 
+IF(
+    dimDate[Ops Fiscal Year Week Number] < dimDate[Current Ops FY Week Num], TRUE(), FALSE()
+)
