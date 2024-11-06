@@ -1,0 +1,46 @@
+FC = 
+VAR ACLY =
+--values last year
+    CALCULATE (
+        [AC],
+        ALLEXCEPT ( dimDate, dimDate[Ops Day of Week], dimDate[Ops Fiscal Quarter], dimDate[Ops Fiscal Month], dimDate[Ops Fiscal Week Number] ),
+        dimDate[Ops Fiscal Year Number] = MAX ( dimDate[Ops Fiscal Year Number] ) - 1
+    )
+VAR AC2YrsAgo =
+--values 2 years ago
+    CALCULATE (
+        [AC],
+        ALLEXCEPT ( dimDate, dimDate[Ops Day of Week], dimDate[Ops Fiscal Quarter], dimDate[Ops Fiscal Month], dimDate[Ops Fiscal Week Number] ),
+        dimDate[Ops Fiscal Year Number] = MAX ( dimDate[Ops Fiscal Year Number] ) - 2
+    )
+VAR AC3YrsAgo =
+--values 3 years ago
+    CALCULATE (
+        [AC],
+        ALLEXCEPT ( dimDate, dimDate[Ops Day of Week], dimDate[Ops Fiscal Quarter], dimDate[Ops Fiscal Month], dimDate[Ops Fiscal Week Number] ),
+        dimDate[Ops Fiscal Year Number] = MAX ( dimDate[Ops Fiscal Year Number] ) - 3
+    )
+VAR Factor = 1
+--1 = zero % increase, 1.05 = 5% increase
+VAR _maxAbsenteeismDate =
+--max date with value, switch to specific "datewith..."
+    CALCULATE(
+        MAX( dimDate[Date] ), dimDate[DateWithAbsence] = TRUE()
+    )
+VAR FC = 
+--choose specific FC range to use
+SWITCH(
+    TRUE(),
+    AC2YrsAgo > 0 && AC3YrsAgo > 0,                                --3 year of data available
+        DIVIDE( ACLY + AC2YrsAgo + AC3YrsAgo, 3, 0 ) * Factor,     --result with 3 years of data
+    AC2YrsAgo > 0 && ISBLANK( AC3YrsAgo ),                         --2 years of data
+        DIVIDE( ACLY + AC2YrsAgo, 2, 0 ) * Factor,                 --result with 2 years of data
+    ISBLANK( AC2YrsAgo ),                                          --1 year of data
+        DIVIDE( ACLY, 1, 0 ) * Factor                              --result with 1 year of data
+)
+VAR Result =
+--filter for date values greater than available data. So FC is only shown on upcoming dates
+    SUMMARIZE(
+        FILTER( dimDate, dimDate[Date] > _maxAbsenteeismDate ), "FC", FC )
+RETURN
+    Result
