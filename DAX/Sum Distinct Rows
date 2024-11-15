@@ -1,0 +1,9 @@
+Total Processed Lbs Lost = 
+--only sum distinct rows
+SUMX( 
+    DISTINCT( factForeignMaterialTracking[Surrogate Key] ),
+    FIRSTNONBLANK(
+        factForeignMaterialTracking[FMF Total Lbs Lost Num], 
+        SUM( factForeignMaterialTracking[FMF Total Lbs Lost Num] )
+    )
+)
