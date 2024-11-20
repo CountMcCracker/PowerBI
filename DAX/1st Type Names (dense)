@@ -1,0 +1,5 @@
+1st Type Names (dense) = 
+CALCULATE ( 
+    [Nth-Absenteeism Type Names Dense],
+    RankPosition[RankPosition] = 1 
+)
