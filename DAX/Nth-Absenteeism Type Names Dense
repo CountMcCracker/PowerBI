@@ -1,0 +1,28 @@
+Nth-Absenteeism Type Names Dense = 
+-- Get the rank position parameter
+VAR Nth = [RankPosition Value]
+
+-- List of absenteeism types to compare with for the ranking
+VAR ReferenceTypes = ALLSELECTED ( dimAbsenteeismType[Absence Type Desc] )
+
+-- Compute absenteeism totals for each type
+VAR Types =
+    ADDCOLUMNS ( 
+        VALUES ( dimAbsenteeismType[Absence Type Desc] ),
+        "Rank", RANKX ( 
+            ReferenceTypes, 
+            [Absent Unplanned Total], 
+            [Absent Unplanned Total], 
+            DESC,
+            Dense 
+        )
+    )
+
+-- Filter types in the Nth position by using the amount
+VAR FilterNthType = FILTER ( ReferenceTypes, [Absenteeism Total Rank] = Nth )
+
+-- Get the name of one of the Nth type (in case of ties, only show one)
+VAR NthType = CONCATENATEX ( FilterNthType, dimAbsenteeismType[Absence Type Desc], ", " )
+
+-- Return either NthType
+RETURN NthType
