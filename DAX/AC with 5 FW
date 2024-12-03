@@ -1,10 +1,11 @@
 AC with 5 FW = 
+--to be used with date slicer, use previousDate table on chart
 VAR _numOfDays = -35
 VAR _referenceDate = MAX( dimDate[Date] )
 VAR _previousDates = 
 // 5 fiscal weeks
     DATESINPERIOD (
-        'dimDate'[Ops Weekending Date],
+        'dimPreviousDate'[Ops Weekending Date],
         _referenceDate,
         _numOfDays,
         DAY
