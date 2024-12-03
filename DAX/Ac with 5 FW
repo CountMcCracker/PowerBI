@@ -1,0 +1,19 @@
+AC with 5 FW = 
+VAR _numOfDays = -35
+VAR _referenceDate = MAX( dimDate[Date] )
+VAR _previousDates = 
+// 5 fiscal weeks
+    DATESINPERIOD (
+        'dimDate'[Ops Weekending Date],
+        _referenceDate,
+        _numOfDays,
+        DAY
+    )
+VAR Result =
+    CALCULATE (
+        [AC],
+        REMOVEFILTERS ( 'dimDate' ),
+        KEEPFILTERS ( _previousDates ),
+        USERELATIONSHIP ( 'dimPreviousDate'[Date], 'dimDate'[Date] )
+    )
+RETURN Result
