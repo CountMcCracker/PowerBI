@@ -1,6 +1,6 @@
 PY := 
 SWITCH(
-    MIN( KPIs[KPI cd] ),
+   SELECTEDVALUE( KPIs[KPI cd] ),
     1, -- only performs calulation on KPI Cd = 1 all others are blank, use this to select PY baseline for specific KPIs
     VAR MonthsOffset = 12
     RETURN IF(
