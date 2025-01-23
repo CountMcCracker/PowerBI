@@ -1,7 +1,7 @@
 AC := 
 --use to specify which KPIs to show with actuals
 SWITCH(
-    MIN( KPIs[KPI cd] ),
+    SELECTEDVALUE( KPIs[KPI cd] ),
     1, [Sales Amount],
     2, [Quantity Sold in LBS],
     3, [Sales Amount - Product Cost Amount]
