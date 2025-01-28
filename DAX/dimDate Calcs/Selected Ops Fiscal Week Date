@@ -1,4 +1,6 @@
 Selected Ops Fiscal Week Date := 
+--allows for 1 year selection
+
 VAR _maxdate = 
     CALCULATE(
         MAX( dimDate[Date] ),
