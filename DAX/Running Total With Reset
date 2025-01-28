@@ -1,0 +1,35 @@
+Running Total With Reset = 
+--running total that resets to zero and starts over
+
+VAR _plant = SELECTEDVALUE( summaryFM[Plant Cd] )
+VAR _lastWeek = MAX( summaryFM[Ops Fiscal Week Number] )
+VAR _currentYear = MAX( summaryFM[Ops Fiscal Year Number] )
+VAR _lastWeekStart = 
+    CALCULATE(
+        MAX(  summaryFM[Ops Fiscal Week Number]),
+        FILTER(
+            ALL( summaryFM ),                                              --clears all filters on table and associated tables
+            summaryFM[Plant Cd] = _plant                                   --sets plant for row context
+                && summaryFM[Above Goal Count] = 0                         --where above goal column = 0
+                && summaryFM[Ops Fiscal Week Number] < _lastWeek           --less than last week
+                && summaryFM[Ops Fiscal Year Number] = _currentYear        --current fiscal year (outside filter)
+        )
+    )
+//Determines the most recent week (before the current week) where [Above Goal Count] = 0. It ensures the running total resets by filtering the data by plant, fiscal year, and fiscal week.
+
+VAR streak =
+    CALCULATE (
+        COUNTROWS ( summaryFM),                                            --count rows in table
+        FILTER (
+            ALL ( summaryFM ),                                             --clears all filters on table and associated tables
+            summaryFM[Plant Cd] = _plant                                   --sets plant for row context
+                && summaryFM[Ops Fiscal Week Number] <= _lastWeek          --less than or equal to last week of range
+                && summaryFM[Ops Fiscal Week Number] >= _lastWeekStart     --greater than or equal to start of range
+                && summaryFM[Ops Fiscal Year Number] = _currentYear        --current fiscal year (outside filter)
+                && summaryFM[Above Goal Count] = 1                         --where above goal column = 1
+        )
+    )
+//Counts the rows between the reset week (_lastWeekStart) and the current week where [Above Goal Count] = 1. This is the "running total" segment for the streak.
+
+RETURN
+    IF ( SELECTEDVALUE ( summaryFM[Above Goal Count] ) = 0, 0, streak )
