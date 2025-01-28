@@ -1,4 +1,4 @@
-Selected Ops Fiscal Week Date v2 = 
+Selected Ops Fiscal Week Date v2 := 
 --allows for multiple year selections
 
 VAR _maxdate = 
