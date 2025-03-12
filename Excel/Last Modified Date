@@ -14,3 +14,23 @@ last modified date =
   ),
   ""
 )
+
+
+
+v2 = 
+=IF(
+  G41="Approved",
+  IF(
+    AND(
+      G41<>"",
+      CELL("address")=ADDRESS(ROW(G41),COLUMN(G41))
+    ),
+    NOW(),
+    IF(
+      CELL("address")<>ADDRESS(ROW(G41),COLUMN(G41)),
+      H41,
+      NOW()
+    )
+  ),
+  ""
+)
