@@ -1,0 +1,6 @@
+Product Cd and Desc w Unknown =
+-- add calculated column to fact table, where blank values in relationship want to be viewed as "unknown"
+    COALESCE(
+        RELATED( dimProduct[Product Cd and Desc] ),
+        "UNKNOWN"
+    )
