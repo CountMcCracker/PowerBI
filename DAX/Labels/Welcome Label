@@ -1,0 +1,12 @@
+Welcome Label = 
+VAR _user = USERPRINCIPALNAME()
+VAR _display = LOOKUPVALUE(tf_users[Display Nm], tf_users[User Principle Nm], _user)
+VAR _hour = HOUR(NOW())
+VAR _minute = MINUTE(NOW())
+VAR _prefix = SWITCH(
+                    TRUE(),
+                    _hour<12,"Good morning ",
+                    _hour>=12 && _hour<17,"Good afternoon ",
+                    "Good evening "
+             )
+RETURN CONCATENATE(_prefix, _display)
