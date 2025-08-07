@@ -1,0 +1,12 @@
+Iso PY v2:=
+    CALCULATE (
+        SUM ( Sales[Sales Amount] ),
+        FILTER (
+            ALL ( Dates ),
+            Dates[ISO Year Number] = VALUES ( Dates[ISO Year Number] ) - 1
+                && CONTAINS(
+                    VALUES ( Dates[ISO Year Day Number] ),
+                    Dates[ISO Year Day Number],
+                    Dates[ISO Year Day Number] )
+        )
+    )
