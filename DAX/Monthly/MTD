@@ -1,14 +1,14 @@
 MTD := 
 IF (
-    [ShowValueForDates],
-    VAR LastDayAvailable =  MAX ( dimDate[Day of Fiscal Month Number] )
-    VAR LastFiscalYearMonthAvailable = MAX ( dimDate[Fiscal Year Month Number] )
+    [ShowValueForDates],                                                                      -- only avilable dates
+    VAR LastDayAvailable =  MAX ( dimDate[Day of Fiscal Month Number] )                       -- max day of fiscal month available
+    VAR LastFiscalYearMonthAvailable = MAX ( dimDate[Fiscal Year Month Number] )              -- current fiscal month of fiscal year
     VAR Result =
         CALCULATE (
-            [AC],
+            [AC],                                                                             -- selected measure
             ALLEXCEPT ( dimDate, dimDate[Day of Week] ),
-            dimDate [Day of Fiscal Month Number] <= LastDayAvailable,
-            dimDate [Fiscal Year Month Number] = LastFiscalYearMonthAvailable
+            dimDate [Day of Fiscal Month Number] <= LastDayAvailable,                         -- same days in month, same time period
+            dimDate [Fiscal Year Month Number] = LastFiscalYearMonthAvailable                 -- current fiscal month of current fiscal year
         )
     RETURN
         Result
