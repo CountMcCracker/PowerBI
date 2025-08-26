@@ -1,23 +1,23 @@
 PYTD := 
 IF (
-    [ShowValueForDates],
-    VAR PreviousFiscalYear = MAX ( dimDate[Fiscal Year Number] ) - 1
+    [ShowValueForDates],                                                                    -- only available dates
+    VAR PreviousFiscalYear = MAX ( dimDate[Ops Fiscal Year Number] ) - 1                    -- prior year
     VAR LastDayOfFiscalYearAvailable =
         CALCULATE (
-            MAX ( dimDate[Day of Fiscal Year Number] ),
-            REMOVEFILTERS (                  -- Removes filters from
-                dimDate[Day of Week],        -- to get the last day with data
-                dimDate[Day of Week Number]  -- selected in the report
+            MAX ( dimDate[Ops Day of Fiscal Year Number] ),                                 -- max day of current fiscal year available
+            REMOVEFILTERS (                                                  
+                dimDate[Ops Day of Week],                                                   -- removes outside filters on day of week and day of week number                 
+                dimDate[Ops Day of Week Number]                                  
             ),
-            dimDate[DateWithValue] = TRUE
+            dimDate[DateWithValue] = TRUE                                                   -- only dates with values
         )
     VAR Result =
         CALCULATE (
-            [AC],
-            ALLEXCEPT ( dimDate, dimDate[Day of Week] ),
-            dimDate[Fiscal Year Number] = PreviousFiscalYear,
-            dimDate[Day of Fiscal Year Number] <= LastDayOfFiscalYearAvailable,
-            dimDate[DateWithValue] = TRUE
+            [AC],                                                                           -- selected measure
+            ALLEXCEPT ( dimDate, dimDate[Ops Day of Week] ),                                -- removes filters except for day of week
+            dimDate[Ops Fiscal Year Number] = PreviousFiscalYear,                           -- prior fiscal year
+            dimDate[Ops Day of Fiscal Year Number] <= LastDayOfFiscalYearAvailable,         -- same dates, same time period
+            dimDate[DateWithValue] = TRUE                                                   -- only dates with values
         )
     RETURN
         Result
