@@ -1,12 +1,15 @@
-Iso PY v2:=
-    CALCULATE (
-        SUM ( Sales[Sales Amount] ),
-        FILTER (
-            ALL ( Dates ),
-            Dates[ISO Year Number] = VALUES ( Dates[ISO Year Number] ) - 1
-                && CONTAINS(
-                    VALUES ( Dates[ISO Year Day Number] ),
-                    Dates[ISO Year Day Number],
-                    Dates[ISO Year Day Number] )
-        )
-    )
+PY v2 :=
+--calculation group
+CALCULATE (
+    SELECTEDMEASURE(),                                                                          -- measure, like [AC]
+    FILTER (
+        ALL ( dimDate ),                                                                        --clear filters on date table
+        dimDate[Ops Fiscal Year Number] = VALUES ( dimDate[Ops Fiscal Year Number] ) - 1        -- prior fiscal year
+            && CONTAINS(
+                VALUES ( dimDate[Ops Day of Fiscal Year Number] ),                              -- table of day of fiscal year values
+                dimDate[Ops Day of Fiscal Year Number] ,                                        -- source column
+                dimDate[Ops Day of Fiscal Year Number]  )                                       -- target column, will match number of days between current and prior fiscal year
+                && dimDate[DateWithPounds] = TRUE()                                             -- necessary, date with value
+                && dimDate[DateWithLabor] = TRUE()                                              -- optional, date with value, as many as needed  
+    )    
+)
