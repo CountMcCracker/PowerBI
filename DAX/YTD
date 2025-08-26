@@ -1,14 +1,14 @@
 YTD := 
 IF (
-    [ShowValueForDates],
-    VAR LastDayAvailable =  MAX ( dimDate [Day of Fiscal Year Number] )
-    VAR LastFiscalYearAvailable = MAX ( dimDate [Fiscal Year Number] )
+    [ShowValueForDates],                                                            -- only for dates available
+    VAR LastDayAvailable =  MAX ( dimDate [Ops Day of Fiscal Year Number] )         -- max day of fiscal year
+    VAR LastFiscalYearAvailable = MAX ( dimDate [Ops Fiscal Year Number] )          -- current fiscal year
     VAR Result =
         CALCULATE (
-            [AC],
-            ALLEXCEPT ( dimDate, dimDate[Day of Week] ),
-            dimDate[Day of Fiscal Year Number] <= LastDayAvailable,
-            dimDate[Fiscal Year Number] = LastFiscalYearAvailable
+            [AC],                                                                   -- selected measure
+            ALLEXCEPT ( dimDate, dimDate[Ops Day of Week] ),                        -- clear filters on date table, except day of week                  
+            dimDate[Ops Day of Fiscal Year Number] <= LastDayAvailable,             -- same number of days from prior year, same time period
+            dimDate[Ops Fiscal Year Number] = LastFiscalYearAvailable               -- current fiscal year
         )
     RETURN
         Result
