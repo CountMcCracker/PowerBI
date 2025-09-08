@@ -1,0 +1,29 @@
+let
+    source = YourTable,
+
+    // Build a combined key string
+    addedKeyString = Table.AddColumn(
+        source,
+        "naturalKeyString",
+        each Text.Combine({
+            Text.Upper(Text.Trim([Plant Nm])),
+            Text.From([Line Cd]),
+            Date.ToText([Fiscal Date], "yyyy-MM-dd")
+        }, "|"),
+        type text
+    ),
+
+    // Hash to hex
+    addedHashKey = Table.AddColumn(
+        addedKeyString,
+        "naturalHashKey",
+        each Binary.ToText(
+            Text.ToBinary([naturalKeyString], TextEncoding.Utf8),
+            BinaryEncoding.Hex
+        ),
+        type text
+    ),
+
+    cleaned = Table.RemoveColumns(addedHashKey, {"naturalKeyString"})
+in
+    cleaned
