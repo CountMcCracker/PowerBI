@@ -1,0 +1,5 @@
+let
+    Source = GoldLayerTable,
+    Renamed = Table.TransformColumnNames(Source, each Text.Proper(Text.Replace(_, "_", " ")))
+in
+    Renamed
