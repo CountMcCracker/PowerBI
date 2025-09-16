@@ -1,0 +1,10 @@
+let
+    fnSHA256Hash = (input as text) as text =>
+    let
+        inputBinary = Text.ToBinary(input, TextEncoding.Utf8),
+        shaBinary = Binary.Hash(inputBinary, HashAlgorithm.SHA256),
+        shaHex = Binary.ToText(shaBinary, BinaryEncoding.Hex)
+    in
+        shaHex
+in
+    fnSHA256Hash
