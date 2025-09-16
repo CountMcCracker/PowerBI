@@ -1,0 +1,21 @@
+let
+    fnToSnakeCase = (txt as text) as text =>
+    let
+        // Trim spaces
+        trimmed = Text.Trim(txt),
+
+        // Replace spaces and hyphens with underscores
+        step1 = Text.Replace(Text.Replace(trimmed, " ", "_"), "-", "_"),
+
+        // Remove characters that aren't letters, numbers, or underscores
+        step2 = Text.Select(step1, {"A".."Z","a".."z","0".."9","_"}),
+
+        // Collapse multiple underscores into one
+        step3 = Text.Replace(step2, "__", "_"),
+
+        // Convert to lowercase
+        snake = Text.Lower(step3)
+    in
+        snake
+in
+    fnToSnakeCase
