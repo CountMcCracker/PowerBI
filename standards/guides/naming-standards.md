@@ -17,7 +17,7 @@ ASCII-compliant measure names and IBCS-aligned chart titles/headers (with deltas
 ```
 <Metric> <DeltaType?> <Scope?> vs<Baseline?>
 ```
-- **Metric:** Efficiency, Shrink Pct, Saleable Pounds, Production Hours, Committed Cost per Lb, etc.
+- **Metric:** Efficiency Pct, Shrink Pct, Saleable Pounds, Production Hours, Committed Cost per Lb, etc.
 - **DeltaType (optional):**
   - `Variance`  → absolute change in same unit as metric (totals and unit rates)
   - `Delta Pct` → relative percent change = (Current − Base) / Base
@@ -30,14 +30,14 @@ ASCII-compliant measure names and IBCS-aligned chart titles/headers (with deltas
 - `Efficiency Pct PY`
 - `Efficiency Pct Delta Pct vsPY`
 - `Efficiency Pct Delta PctPt vsPY`
-- `Saleable Pounds per Labor Hour`
-- `Saleable Pounds Variance vsPL`
+- `Saleable Lb per Labor Hour`
+- `Saleable Lb Variance vsPL`
 - `Committed Cost per Lb`
 - `Committed Cost Variance vsBudget`
 
 **Units inside names**
 - Use singular tokens in names: `Lb`, `Hour`.
-- Preferred names: `Saleable Pounds`, `Production Hours`, `Committed Cost per Lb`.
+- Preferred names: `Saleable Lb`, `Production Hours`, `Committed Cost per Lb`.
 - Avoid doubled units in names like `Lb/LH` or `$/lb` — move those to labels.
 
 ---
@@ -67,7 +67,7 @@ ASCII-compliant measure names and IBCS-aligned chart titles/headers (with deltas
 - `MTD`, `QTD`, `YTD`, `FYTD`, `R13W` (Rolling 13 Weeks), `R12M` (Rolling 12 Months).
 
 **Examples**
-- `Saleable Pounds Variance vsPY YTD`
+- `Saleable Lb Variance vsPY YTD`
 - `Efficiency Pct Delta Pct vsTarget QTD`
 
 ---
