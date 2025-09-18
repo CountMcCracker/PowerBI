@@ -80,14 +80,17 @@ Efficiency Pct :=
 DIVIDE( [Good Units], [Total Units] )
 
 Efficiency Pct PY :=
-VAR currFY  = MAX( dimDate[Ops Fiscal Year Number] )
-VAR currDay = MAX( dimDate[Ops Day of Fiscal Year Number] )
-RETURN
-CALCULATE(
+CALCULATE (
     [Efficiency Pct],
-    REMOVEFILTERS( dimDate ),
-    dimDate[Ops Fiscal Year Number] = currFY - 1,
-    dimDate[Ops Day of Fiscal Year Number] <= currDay
+    FILTER (
+        ALL ( dimDate ),
+        dimDate[Ops Fiscal Year Number] = VALUES ( dimDate[Ops Fiscal Year Number] ) - 1        
+            && CONTAINS(
+                VALUES ( dimDate[Ops Day of Fiscal Year Number] ),
+                dimDate[Ops Day of Fiscal Year Number] ,                                        
+                dimDate[Ops Day of Fiscal Year Number]  )
+                && dimDate[DateWithPounds] = TRUE()
+    )    
 )
 ```
 
@@ -113,7 +116,7 @@ Efficiency Pct Delta PctPt vsPY :=
 
 **Unit rate**
 ```DAX
-Saleable Pounds per Labor Hour :=
+Saleable Lb per Labor Hour :=
 DIVIDE( [Pounds Produced Saleable], [Labor Hours] )
 ```
 
