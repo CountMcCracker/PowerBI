@@ -1,0 +1,12 @@
+let
+    Hash = (input as text) as text =>
+    let
+        // Convert text to binary
+        inputBinary = Text.ToBinary(input, TextEncoding.Utf8),
+
+        // Convert to hex string (always 32 characters)
+        Hex = Binary.ToText(inputBinary, BinaryEncoding.Hex)
+    in
+        Hex
+in
+    Hash
