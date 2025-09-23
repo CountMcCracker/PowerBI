@@ -201,5 +201,3 @@ Context: <Metric and unit> | <Scenario/baseline> | <Time window> | <Breakdown>
 **Visual labels and titles**
 - May use symbols and slashes: `%`, `$`, `Δ`, `/`, `pp`.
 - Examples: `USD/lb`, `Δ% vs PY`, `Δ vs PL (pp)`, `lb/h`.
-
-```
