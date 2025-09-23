@@ -138,29 +138,24 @@ Context: <Metric and unit> | <Scenario/baseline> | <Time window> | <Breakdown>
 
 **Examples**
 - **Title:** `Efficiency up vs PY; Q3 strongest YTD`
-  **Context:** `Production efficiency (%) | AC vs PY | FY2025 YTD | by fiscal quarter with monthly detail`
-
-- **Title:** `Products ranked by saleable (lb) (↓)`
-  **Context:** `Efficiency (%) • Saleable (lb) • Capacity (lb) • Production hours | FY2025 YTD | by product`
+  **Context:** `Production efficiency (%) | AC vs PY | Jan-2.. Mar-7 2025 | by fiscal quarter with monthly detail`
 
 **Neutral single-line (when no message)**
-- `Production efficiency (%), saleable (lb), capacity (lb), and production hours by product (sorted by saleable (lb) descending)`
+- **Title:** `Production efficiency (%), saleable (lb), capacity (lb), and production hours by product (sorted by saleable (lb) ↓)`
+- - **Context:** 'Sep-24.. Dec-24 2025 | AC vs PY vs PL'
 
 **Do**
 - Put units right after metric names in parentheses in the context line or title.
-- Use sentence case or title case consistently — choose one org-wide.
-- Indicate ranking either by wording in the title (`ranked by…`) or by an arrow on the sorted column header.
 
 **Don’t**
 - Don’t write “in PCT”. Use `(%).`
-- Don’t embed currency or percent symbols in **measure names**.
 
 ---
 
 ## 6) Table and matrix headers (IBCS)
 
 **When to put units in headers**
-- If all numeric columns share the same unit and scale, you may place the unit in the subtitle.
+- If all numeric columns share the same unit and scale, you may place the unit in the title.
 - If columns use different units or scales, put units and scale on **each** column header.
 
 **Header patterns**
@@ -186,7 +181,7 @@ Context: <Metric and unit> | <Scenario/baseline> | <Time window> | <Breakdown>
 - `Committed Cost Variance vsPL`
 - `Efficiency Pct Delta Pct vsPY`
 - `Efficiency Pct Delta PctPt vsPY`
-- `Saleable Pounds per Labor Hour`
+- `Saleable Lb per Labor Hour`
 - `Production Hours`
 
 **Avoid**
@@ -207,64 +202,4 @@ Context: <Metric and unit> | <Scenario/baseline> | <Time window> | <Breakdown>
 - May use symbols and slashes: `%`, `$`, `Δ`, `/`, `pp`.
 - Examples: `USD/lb`, `Δ% vs PY`, `Δ vs PL (pp)`, `lb/h`.
 
----
-
-## 9) Favorability and color rules
-
-Document the sign convention once and apply it everywhere.
-- Example: For Efficiency, higher is better — positive `Delta Pct` is favorable.
-- For Shrink Pct, lower is better — negative `Delta Pct` is favorable.
-
-**Optional helper measures:**
-```DAX
-IsImproving (Efficiency vsPY) :=
-VAR c = [Efficiency Pct Delta Pct vsPY]
-RETURN IF( NOT ISBLANK(c) && c >= 0, TRUE(), FALSE() )
-
-IsImproving (Shrink Pct vsPY) :=
-VAR c = [Shrink Pct Delta Pct vsPY]
-RETURN IF( NOT ISBLANK(c) && c <= 0, TRUE(), FALSE() )
-```
----
-
-## 10) Pull-request checklist
-
-- Name is ASCII, follows pattern `<Metric> <DeltaType?> <Scope?> vs<Baseline?>`.
-- Display folder and format string are set.
-- Units appear in labels/headers, not in the name.
-- Uses `DIVIDE` with consistent baseline logic.
-- Percent vs percentage-point changes are correctly distinguished.
-- Chart titles use message + context, or neutral single-line if no message.
-- Table headers show units and scaling where needed.
-- Sorting and scaling are indicated in headers or title.
-- Favorability and color map align with sign convention.
-
----
-
-## 11) Copy snippets for quick reuse
-
-**Percent change vs PY**
-```DAX
-<Metric> Delta Pct vsPY :=
-VAR curr = [<Metric>]
-VAR base = [<Metric> PY]
-RETURN DIVIDE( curr - base, base )
-```
-
-**Percentage-point change vs PY**
-```DAX
-<Metric> Delta PctPt vsPY :=
-[<Metric>] - [<Metric> PY]
-```
-
-**Variance vs PL**
-```DAX
-<Metric> Variance vsPL :=
-[<Metric>] - [<Metric> PL]
-```
-
-**Title + context template**
-```
-Title: <Message about what changed>
-Context: <Metric 1 (unit)> • <Metric 2 (unit)> | <Scenario> | <Time> | by <Breakdown>
-```
+'''
