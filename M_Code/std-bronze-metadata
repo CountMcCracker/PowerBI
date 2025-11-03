@@ -1,0 +1,38 @@
+// --- Add source system name metadata column ---
+    addSourceSystemNm = 
+        Table.TransformColumnTypes(
+            Table.AddColumn(renamedToSnakeCase, "source_system_nm", each "enter_name"),
+            {{"source_system_nm", type text}}
+        ),
+
+    // --- Add source file name metadata column ---
+    addSourceFileNm = 
+        Table.TransformColumnTypes(
+            Table.AddColumn(addSourceSystemNm, "source_file_nm", each "enter_name"),
+            {{"source_file_nm", type text}}
+        ),
+
+    // --- Add source folder path metadata column ---
+    addSourceFolderPath = 
+        Table.TransformColumnTypes(
+            Table.AddColumn(
+                addSourceFileNm,
+                "source_folder_path",
+                each "enter_folder_path"
+            ),
+            {{"source_folder_path", type text}}
+        ),
+
+    // --- Add ingestion UTC date metadata column ---
+    addIngestionUtcDt = 
+        Table.TransformColumnTypes(
+            Table.AddColumn(addSourceFolderPath, "ingestion_utc_dt", each DateTime.Date(DateTime.FixedLocalNow())),
+            {{"ingestion_utc_dt", type date}}
+        ),
+
+    // --- Add ingestion UTC timestamp metadata column ---
+    addIngestionUtcTmstp = 
+        Table.TransformColumnTypes(
+            Table.AddColumn(addIngestionUtcDt, "ingestion_utc_tmstp", each DateTime.FixedLocalNow()),
+            {{"ingestion_utc_tmstp", type datetime}}
+        )
