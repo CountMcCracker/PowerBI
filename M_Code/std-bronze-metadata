@@ -23,13 +23,6 @@
             {{"source_folder_path", type text}}
         ),
 
-    // --- Add ingestion UTC date metadata column ---
-    addIngestionUtcDt = 
-        Table.TransformColumnTypes(
-            Table.AddColumn(addSourceFolderPath, "ingestion_utc_dt", each DateTime.Date(DateTime.FixedLocalNow())),
-            {{"ingestion_utc_dt", type date}}
-        ),
-
     // --- Add ingestion UTC timestamp metadata column ---
     addIngestionUtcTmstp = 
         Table.TransformColumnTypes(
