@@ -26,6 +26,6 @@
     // --- Add ingestion UTC timestamp metadata column ---
     addIngestionUtcTmstp = 
         Table.TransformColumnTypes(
-            Table.AddColumn(addIngestionUtcDt, "ingestion_utc_tmstp", each DateTime.FixedLocalNow()),
+            Table.AddColumn(addSourceFolderPath, "ingestion_utc_tmstp", each DateTime.FixedLocalNow()),
             {{"ingestion_utc_tmstp", type datetime}}
         )
