@@ -1,0 +1,14 @@
+// filter dates for last 5 years and next 2 years
+  filterYearRange = 
+    let
+      currentYear = Date.Year(DateTime.FixedLocalNow()),
+      startYear = currentYear - 5,
+      endYear = currentYear + 2,
+      filterRange =
+        Table.SelectRows(
+            validRecordsTrue,
+            each [ops_fiscal_year_num] >= startYear
+                and [ops_fiscal_year_num] <= endYear
+        )
+    in
+      filterRange
