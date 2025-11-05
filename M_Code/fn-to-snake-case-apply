@@ -1,5 +1,5 @@
 let
     Source = GoldLayerTable,
-    Renamed = Table.TransformColumnNames(Source, each fnToSnakeCase(_))
+    renamedToSnakeCase = Table.TransformColumnNames(Source, each fnToSnakeCase(_))
 in
-    Renamed
+    renamedToSnakeCase
