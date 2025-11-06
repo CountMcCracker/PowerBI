@@ -1,0 +1,17 @@
+// Purpose: Create a code column by removing spaces and non-alphabetic and non-numeric characters from a text column, converting to uppercase.
+
+let
+    fnGenerateColCd = (col as text) as text =>
+        let
+            // Handle null or empty inputs safely
+            safeText = if col <> null then col else "",
+
+            // Keep only A–Z and a–z
+            lettersAndNumbersOnly = Text.Select(safeText, {"A".."Z", "a".."z", "0".."9"}),
+
+            // Convert to uppercase
+            colCd = Text.Upper(lettersAndNumbersOnly)
+        in
+            colCd
+in
+    fnGenerateColCd
