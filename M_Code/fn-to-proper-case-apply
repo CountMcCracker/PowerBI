@@ -1,5 +1,5 @@
 let
     Source = GoldLayerTable,
-    renamedToProperCase = Table.TransformColumnNames(Source, each Text.Proper(Text.Replace(_, "_", " ")))
+    renamedToProperCase = Table.TransformColumnNames(Source, each fnToProperCase(_))
 in
     renamedToProperCase
