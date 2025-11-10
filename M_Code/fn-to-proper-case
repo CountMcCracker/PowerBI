@@ -4,7 +4,7 @@ let
     fnToProperCase = (txt as text) as text =>
         Text.Proper(Text.Replace(txt, "_", " ")),
 
-    TransformColumnNames = (tbl as table) as table =>
-        Table.TransformColumnNames(tbl, each ToProperCase(_))
+   // TransformColumnNames = (tbl as table) as table =>
+        //Table.TransformColumnNames(tbl, each ToProperCase(_))
 in
-    TransformColumnNames
+    fnToProperCase
