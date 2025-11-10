@@ -1,6 +1,7 @@
 let
     // Function: snake_case → Proper Case with spaces
-    ToProperCase = (txt as text) as text =>
+
+    fnToProperCase = (txt as text) as text =>
         Text.Proper(Text.Replace(txt, "_", " ")),
 
     TransformColumnNames = (tbl as table) as table =>
