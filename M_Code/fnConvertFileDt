@@ -1,0 +1,9 @@
+fxConvertFileDt = (input as text) as datetime =>
+    let
+        datePart = Text.Start(input, 10),
+        timeRaw  = Text.Range(input, 11, 8),
+        timePart = Text.Replace(timeRaw, "-", ":"),
+        fullText = datePart & " " & timePart,
+        result   = DateTime.From(fullText)
+    in
+        result
