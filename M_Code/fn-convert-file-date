@@ -1,4 +1,5 @@
-fxConvertFileDt = (input as text) as datetime =>
+let
+    fnConvertFileDate = (input as text) as datetime =>
     let
         datePart = Text.Start(input, 10),
         timeRaw  = Text.Range(input, 11, 8),
@@ -7,3 +8,5 @@ fxConvertFileDt = (input as text) as datetime =>
         result   = DateTime.From(fullText)
     in
         result
+in 
+  fnConvertFileDate
