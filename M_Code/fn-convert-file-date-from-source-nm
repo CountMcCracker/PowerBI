@@ -1,0 +1,20 @@
+let
+    fnConvertFileDateFromSourceName = (sourceName as text) as datetime =>
+        let
+            // Remove the .txt extension
+            noExtension = Text.BeforeDelimiter(sourceName, ".txt"),
+
+            // Extract the last 19 characters (YYYY-MM-DD HH-MM-SS)
+            rawDateTimeText = Text.End(noExtension, 19),
+
+            datePart = Text.Start(rawDateTimeText, 10),            // 2025-06-20
+            timeRaw  = Text.Range(rawDateTimeText, 11, 8),         // 03-00-12
+            timePart = Text.Replace(timeRaw, "-", ":"),            // 03:00:12
+
+            fullText = datePart & " " & timePart,                  // 2025-06-20 03:00:12
+
+            result   = DateTime.From(fullText)
+        in
+            result
+in
+    fnConvertFileDateFromSourceName
