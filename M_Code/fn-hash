@@ -1,5 +1,5 @@
 let
-    Hash = (input as text) as text =>
+    fnHash = (input as text) as text =>
     let
         // Convert text to binary
         inputBinary = Text.ToBinary(input, TextEncoding.Utf8),
@@ -9,4 +9,4 @@ let
     in
         Hex
 in
-    Hash
+    fnHash
