@@ -1,0 +1,14 @@
+// Function: fnCombineTwoColumns
+// Combines two field values into product_warehouse_cd format.
+(colA as any, colB as any) as text =>
+let
+    valueA = Text.From(colA),
+    valueB = "0" & Text.From(colB),
+
+    combinedText =
+        Text.Combine(
+            { valueA, valueB },
+            "-"
+        )
+in
+    combinedText
