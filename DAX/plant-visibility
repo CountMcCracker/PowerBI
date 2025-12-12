@@ -1,13 +1,15 @@
-Production Lbs (Plant Visibility) :=
-VAR currentDate =
-    MAX('dimDate'[Date])
-
-VAR plantActiveFrom =
-    MAX('dimPlant'[plantActiveFromDate])
-
+FMF Rate = 
+VAR currentDate = MAX( dimDate[Date] )
+VAR activePlantFrom = MAX( dimPlantLocationChild[Active From Date] )
+VAR isNewPlant = SELECTEDVALUE( dimPlantLocationChild[Plant Nm] ) = "COLUMBUS NORTH"
 RETURN
+
 IF(
-    currentDate < plantActiveFrom,
-    BLANK(),
-    [Production Lbs]
+    [ShowLbsForDates],
+    IF(
+        currentDate < activePlantFrom && isNewPlant,
+        BLANK(),
+        100 - [Foreign Material Rate]
+    ),
+    100 - [Foreign Material Rate]
 )
