@@ -1,0 +1,13 @@
+Production Lbs (Plant Visibility) :=
+VAR currentDate =
+    MAX('dimDate'[Date])
+
+VAR plantActiveFrom =
+    MAX('dimPlant'[plantActiveFromDate])
+
+RETURN
+IF(
+    currentDate < plantActiveFrom,
+    BLANK(),
+    [Production Lbs]
+)
