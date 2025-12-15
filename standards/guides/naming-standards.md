@@ -520,7 +520,7 @@ Before creating or approving a new measure, verify:
 - **IBCS Standards:** International Business Communication Standards (https://www.ibcs.com)
 - **DAX Patterns:** https://www.daxpatterns.com
 - **Power BI Best Practices:** Microsoft documentation on data modeling
-- **Internal contacts:** [Add your governance team contacts here]
+- **Internal contacts:** Paul Tredrea
 
 ---
 
