@@ -1,0 +1,28 @@
+// Purpose: Create a code column by removing spaces and non-alphabetic characters from a text column, converting to proper case.
+
+let
+    fnGenerateColNm = (col as text) as text =>
+        let
+            // Handle null or empty inputs safely
+            safeText = if col <> null then col else "",
+
+            upperText = Text.Upper(safeText),
+
+            // Handle possessive suffix patterns
+            removePossessive = 
+                if Text.EndsWith(upperText, "S'S") then 
+                    Text.RemoveRange(safeText, Text.Length(safeText) - 3, 3) & "S"
+                else if Text.EndsWith(upperText, "'S") then 
+                    Text.RemoveRange(safeText, Text.Length(safeText) - 2, 2) & "S"
+                else 
+                    safeText,
+
+            // Keep only A–Z and a–z
+            lettersOnly = Text.Select(removePossessive, {"A".."Z", "a".."z", " "}),
+
+            // Convert to uppercase
+            colCd = Text.Proper(lettersOnly)
+        in
+            colCd
+in
+    fnGenerateColNm
