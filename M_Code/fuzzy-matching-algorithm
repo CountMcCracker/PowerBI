@@ -1,0 +1,258 @@
+// ========================================
+// PART 3: Gold Layer - Tiered Customer Matching
+// ========================================
+
+// ========================================
+// STEP 1: Create/Load Customer Dimension Table
+// ========================================
+let
+    // This would be your master customer dimension
+    dimCustomer = #table(
+        {"customer_key", "customer_cd_hash", "customer_nm_clean_hash", "customer_nm_clean", "customer_cd"},
+        {
+            {1, "ABC123HASH", "ACMECORPHASH", "ACME CORP", "ACMECORP"},
+            {2, "DEF456HASH", "GLOBEXINCHASH", "GLOBEX INC", "GLOBEXINC"},
+            {3, "GHI789HASH", "INITECHHASH", "INITECH", "INITECH"}
+            // ... more customers
+        }
+    )
+in
+    dimCustomer
+
+
+// ========================================
+// STEP 2: Tiered Matching Logic
+// ========================================
+let
+    // Load silver detail table with matching keys
+    silverDetail = silver_customer_product_testing_detail,
+    
+    // Load customer dimension
+    dimCustomer = gold_dim_customer,
+    
+    // TIER 1: Exact match on customer_cd_hash
+    tier1Match = Table.NestedJoin(
+        silverDetail,
+        {"customer_cd_hash"},
+        dimCustomer,
+        {"customer_cd_hash"},
+        "matched_customer",
+        JoinKind.LeftOuter
+    ),
+    
+    expandTier1 = Table.ExpandTableColumn(
+        tier1Match,
+        "matched_customer",
+        {"customer_key"},
+        {"customer_key_tier1"}
+    ),
+    
+    addTier1Flag = Table.AddColumn(
+        expandTier1,
+        "match_tier",
+        each if [customer_key_tier1] <> null then "Tier 1 - Exact Code" else null,
+        type text
+    ),
+    
+    // TIER 2: Match on cleaned name hash (for customers with matching names)
+    tier2Match = Table.NestedJoin(
+        Table.SelectRows(addTier1Flag, each [customer_key_tier1] = null),
+        {"customer_nm_clean_hash"},
+        dimCustomer,
+        {"customer_nm_clean_hash"},
+        "matched_customer_tier2",
+        JoinKind.LeftOuter
+    ),
+    
+    expandTier2 = Table.ExpandTableColumn(
+        tier2Match,
+        "matched_customer_tier2",
+        {"customer_key"},
+        {"customer_key_tier2"}
+    ),
+    
+    updateTier2Flag = Table.TransformColumns(
+        expandTier2,
+        {{"match_tier", each if [customer_key_tier2] <> null then "Tier 2 - Clean Name" else _, type text}}
+    ),
+    
+    // TIER 3: Fuzzy matching on similar names
+    tier3Candidates = Table.SelectRows(updateTier2Flag, each [customer_key_tier1] = null and [customer_key_tier2] = null),
+    
+    addFuzzyScores = Table.AddColumn(
+        tier3Candidates,
+        "fuzzy_matches",
+        each 
+            let
+                currentName = [customer_nm_clean],
+                // Cross join with all customers to calculate similarity
+                allCustomers = Table.AddColumn(
+                    dimCustomer,
+                    "similarity_score",
+                    (row) => fnCompositeMatchScore(currentName, row[customer_nm_clean])
+                ),
+                // Filter for matches above threshold (e.g., 80%)
+                goodMatches = Table.SelectRows(allCustomers, each [similarity_score] >= 80),
+                // Sort by best match
+                sortedMatches = Table.Sort(goodMatches, {{"similarity_score", Order.Descending}}),
+                // Take best match
+                bestMatch = if Table.RowCount(sortedMatches) > 0 then 
+                    sortedMatches{0}[customer_key] 
+                    else null
+            in
+                bestMatch
+    ),
+    
+    expandTier3 = Table.RenameColumns(
+        addFuzzyScores,
+        {{"fuzzy_matches", "customer_key_tier3"}}
+    ),
+    
+    updateTier3Flag = Table.TransformColumns(
+        expandTier3,
+        {{"match_tier", each if [customer_key_tier3] <> null then "Tier 3 - Fuzzy Match" else _, type text}}
+    ),
+    
+    // TIER 4: Manual review needed
+    tier4Flag = Table.TransformColumns(
+        updateTier3Flag,
+        {{"match_tier", each if _ = null then "Tier 4 - Manual Review" else _, type text}}
+    ),
+    
+    // Combine all matched records back together
+    combineAllTiers = Table.Combine({
+        Table.SelectRows(addTier1Flag, each [customer_key_tier1] <> null),
+        Table.SelectRows(updateTier2Flag, each [customer_key_tier1] = null and [customer_key_tier2] <> null),
+        tier4Flag
+    }),
+    
+    // Create final customer_key column
+    addFinalCustomerKey = Table.AddColumn(
+        combineAllTiers,
+        "customer_key",
+        each if [customer_key_tier1] <> null then [customer_key_tier1]
+            else if [customer_key_tier2] <> null then [customer_key_tier2]
+            else if [customer_key_tier3] <> null then [customer_key_tier3]
+            else null,
+        Int64.Type
+    ),
+    
+    // Remove temporary matching columns
+    removeTempColumns = Table.RemoveColumns(
+        addFinalCustomerKey,
+        {"customer_key_tier1", "customer_key_tier2", "customer_key_tier3"}
+    ),
+    
+    // Add match confidence flag
+    addMatchConfidence = Table.AddColumn(
+        removeTempColumns,
+        "match_confidence",
+        each if Text.StartsWith([match_tier], "Tier 1") then "High"
+            else if Text.StartsWith([match_tier], "Tier 2") then "High"
+            else if Text.StartsWith([match_tier], "Tier 3") then "Medium"
+            else "Manual Review Required",
+        type text
+    )
+in
+    addMatchConfidence
+
+
+// ========================================
+// STEP 3: Establishment Code Matching (Simpler - Direct Hash Match)
+// ========================================
+let
+    silverDetail = silver_customer_product_testing_detail,
+    dimSupplier = gold_dim_supplier,
+    
+    // Match suspect lot establishments
+    matchSuspectEstablishment = Table.NestedJoin(
+        silverDetail,
+        {"suspect_lot_establishment_cd_hash"},
+        dimSupplier,
+        {"establishment_cd_hash"},
+        "matched_suspect_supplier",
+        JoinKind.LeftOuter
+    ),
+    
+    expandSuspectSupplier = Table.ExpandTableColumn(
+        matchSuspectEstablishment,
+        "matched_suspect_supplier",
+        {"supplier_key"},
+        {"suspect_supplier_key"}
+    ),
+    
+    // Match buffer lot establishments
+    matchBufferEstablishment = Table.NestedJoin(
+        expandSuspectSupplier,
+        {"buffer_lot_establishment_cd_hash"},
+        dimSupplier,
+        {"establishment_cd_hash"},
+        "matched_buffer_supplier",
+        JoinKind.LeftOuter
+    ),
+    
+    expandBufferSupplier = Table.ExpandTableColumn(
+        matchBufferEstablishment,
+        "matched_buffer_supplier",
+        {"supplier_key"},
+        {"buffer_supplier_key"}
+    ),
+    
+    // Flag unmatched establishments for review
+    addSupplierMatchFlag = Table.AddColumn(
+        expandBufferSupplier,
+        "supplier_match_status",
+        each if [suspect_supplier_key] = null and [suspect_lot_establishment_cd_clean] <> "NONE" then
+            "Review - Unmatched Suspect Supplier"
+            else if [buffer_supplier_key] = null and [buffer_lot_establishment_cd_clean] <> "NONE" then
+            "Review - Unmatched Buffer Supplier"
+            else "Matched",
+        type text
+    )
+in
+    addSupplierMatchFlag
+
+
+// ========================================
+// STEP 4: Create Manual Review Report
+// ========================================
+let
+    goldFactDetail = fact_testing_event_detail_with_matches,
+    
+    // Filter for records needing manual review
+    manualReviewRecords = Table.SelectRows(
+        goldFactDetail,
+        each [match_confidence] = "Manual Review Required"
+    ),
+    
+    // Select relevant columns for review
+    reviewReport = Table.SelectColumns(
+        manualReviewRecords,
+        {
+            "test_event_key",
+            "detail_sequence_num",
+            "customer_nm",
+            "customer_nm_clean",
+            "customer_cd",
+            "match_tier",
+            "match_confidence",
+            "load_timestamp"
+        }
+    ),
+    
+    // Export or flag for manual matching process
+    addReviewNotes = Table.AddColumn(
+        reviewReport,
+        "review_notes",
+        each "",
+        type text
+    ),
+    
+    addSuggestedCustomerKey = Table.AddColumn(
+        addReviewNotes,
+        "suggested_customer_key",
+        each null,
+        Int64.Type
+    )
+in
+    addSuggestedCustomerKey
