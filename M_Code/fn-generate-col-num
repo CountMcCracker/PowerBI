@@ -1,0 +1,25 @@
+let
+    fnGenerateColNum = (col as text) as text =>
+        let
+            // Handle null or empty inputs safely
+            safeText = if col <> null then col else "",
+
+            // Remove anything within parentheses (including the parentheses)
+            removeParentheses = Text.Replace(
+                Text.Replace(safeText, 
+                    Text.BetweenDelimiters(safeText & "()", "(", ")", 0, 0), 
+                    ""
+                ),
+                "()", 
+                ""
+            ),
+
+            // Keep only 0-9, decimal point, and negative sign
+            numbersOnly = Text.Select(removeParentheses, {"0".."9", ".", "-"}),
+
+            // Return cleaned number
+            cleanedNumber = numbersOnly
+        in
+            cleanedNumber
+in
+    fnGenerateColNum
