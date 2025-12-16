@@ -1,8 +1,9 @@
 // Purpose: Clean time column and ensure "HH:MM:SS" format
+// Returns datetime (with 1900-01-01 base date) for Dataflows Gen2 compatibility
 // Extracts time before "-" delimiter and validates time format
 
 let
-    fnCleanTime = (col as nullable text) as nullable text =>
+    fnCleanTime = (col as nullable text) as nullable datetime =>
         let
             // Handle null or empty inputs - return null immediately if input is null
             result = if col = null or col = "" then 
@@ -18,12 +19,12 @@ let
                     // Remove anything within parentheses (including the parentheses)
                     removeParentheses = try Text.Replace(
                         Text.Replace(remove1899, 
-                            Text.BetweenDelimiters(col & "()", "(", ")", 0, 0), 
+                            Text.BetweenDelimiters(remove1899 & "()", "(", ")", 0, 0), 
                             ""
                         ),
                         "()", 
                         ""
-                    ) otherwise col,
+                    ) otherwise remove1899,
 
                     // Extract text before the first "-" delimiter
                     timeBeforeDelimiter = try Text.BeforeDelimiter(removeParentheses, "-", 0) otherwise removeParentheses,
@@ -38,9 +39,25 @@ let
                     hoursPart = try Number.From(Text.BeforeDelimiter(cleanTime, ":")) otherwise null,
                     isValidTime = hoursPart <> null and hoursPart >= 0 and hoursPart <= 23,
                     
-                    validatedTime = if isValidTime then cleanTime else null
+                    // Convert validated time string to datetime
+                    convertToDateTime = if isValidTime then
+                        try 
+                            let
+                                // Parse time components
+                                timeParts = Text.Split(cleanTime, ":"),
+                                hours = Number.From(timeParts{0}),
+                                minutes = if List.Count(timeParts) > 1 then Number.From(timeParts{1}) else 0,
+                                seconds = if List.Count(timeParts) > 2 then Number.From(timeParts{2}) else 0,
+                                
+                                // Create datetime with base date 1900-01-01
+                                dateTimeValue = #datetime(1900, 1, 1, hours, minutes, seconds)
+                            in
+                                dateTimeValue
+                        otherwise null
+                    else 
+                        null
                 in
-                    validatedTime
+                    convertToDateTime
         in
             result
 in
