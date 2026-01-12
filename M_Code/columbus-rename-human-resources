@@ -1,0 +1,18 @@
+columbusRenameDept = Table.TransformColumnTypes(
+    Table.ReplaceValue(
+      #"Added absence type group desc",
+      each [Department Desc],
+      each if Text.EndsWith([Plant Cd], "SOUTH") then
+          Text.Replace(Text.Replace(Text.Replace(
+              [Department Desc],
+              "1st", "1st South"), "2nd", "2nd South"), "3rd", "3rd South")
+      else if Text.EndsWith([Plant Cd], "NORTH") then
+          Text.Replace(Text.Replace(Text.Replace(
+              [Department Desc],
+              "1st", "1st North"), "2nd", "2nd North"), "3rd", "3rd North")
+      else
+          [Department Desc],
+      Replacer.ReplaceValue,
+      {"Department Desc"}), 
+    {{"Department Desc", type text}}
+    )
