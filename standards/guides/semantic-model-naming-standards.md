@@ -123,8 +123,11 @@ Only these may appear in names; everything else spelled out.
 | `Key` | Surrogate key |
 | `YTD / QTD / MTD` | To-date periods |
 | `PY / PM / PQ` | Prior period |
+| `PL` | Plan / goal / target |
+| `FC` | Forecast |
 | `YoY / MoM / QoQ` | Period-over-period |
 | `Avg` | Average |
+| `Med` | Median |
 | `Qty` | Quantity |
 | `Amt` | Amount (avoid where space allows; prefer `Amount`) |
 | `%` | Percent (as suffix) |
